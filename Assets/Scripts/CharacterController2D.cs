@@ -24,8 +24,12 @@ public class CharacterController2D : MonoBehaviour {
 	[HideInInspector]
 	public bool playerCanMove = true;
 
-	// SFXs
-	public AudioClip coinSFX;
+    // Shooting
+    [Range(0.0f, 1f)]
+    public float holdShootingTime;
+
+    // SFXs
+    public AudioClip coinSFX;
 	public AudioClip deathSFX;
 	public AudioClip fallSFX;
 	public AudioClip jumpSFX;
@@ -142,7 +146,13 @@ public class CharacterController2D : MonoBehaviour {
 		// if moving up then don't collide with platform layer
 		// this allows the player to jump up through things on the platform layer
 		// NOTE: requires the platforms to be on a layer named "Platform"
-		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f)); 
+		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f));
+
+        // Shoot
+        if(_isGrounded && Input.GetButtonDown("Fire1"))
+        {
+            StartCoroutine("ShootArrow");
+        }
 	}
 
 	// Checking to see if the sprite should be flipped
@@ -189,6 +199,15 @@ public class CharacterController2D : MonoBehaviour {
 		}
 	}
 
+    IEnumerator ShootArrow()
+    {
+        FreezeMotion();
+        _animator.SetBool("Shoot", true);
+        yield return new WaitForSeconds(holdShootingTime);
+        UnFreezeMotion();
+        _animator.SetBool("Shoot", false);
+
+    }
     // make the player jump
     void DoJump()
     {
