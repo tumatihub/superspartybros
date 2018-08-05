@@ -52,9 +52,10 @@ public class CharacterController2D : MonoBehaviour {
 	bool _isGrounded = false;
 	bool _isRunning = false;
     bool _canDoubleJump = false;
+    bool _isShooting = false;
 
-	// store the layer the player is on (setup in Awake)
-	int _playerLayer;
+    // store the layer the player is on (setup in Awake)
+    int _playerLayer;
 
 	// number of layer that Platforms are on (setup in Awake)
 	int _platformLayer;
@@ -93,7 +94,10 @@ public class CharacterController2D : MonoBehaviour {
 			return;
 
 		// determine horizontal velocity change based on the horizontal input
-		_vx = Input.GetAxisRaw ("Horizontal");
+        if (!_isShooting)
+        {
+            _vx = Input.GetAxisRaw("Horizontal");
+        }
 
 		// Determine if running based on the horizontal movement
 		if (_vx != 0) 
@@ -149,7 +153,7 @@ public class CharacterController2D : MonoBehaviour {
 		Physics2D.IgnoreLayerCollision(_playerLayer, _platformLayer, (_vy > 0.0f));
 
         // Shoot
-        if(_isGrounded && Input.GetButtonDown("Fire1"))
+        if(Input.GetButtonDown("Fire1"))
         {
             StartCoroutine("ShootArrow");
         }
@@ -201,10 +205,14 @@ public class CharacterController2D : MonoBehaviour {
 
     IEnumerator ShootArrow()
     {
-        FreezeMotion();
+        _isShooting = true;
+        if (_isGrounded)
+        {
+            _vx = 0;
+        }
         _animator.SetBool("Shoot", true);
         yield return new WaitForSeconds(holdShootingTime);
-        UnFreezeMotion();
+        _isShooting = false;
         _animator.SetBool("Shoot", false);
 
     }
