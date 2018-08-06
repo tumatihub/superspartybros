@@ -27,6 +27,8 @@ public class CharacterController2D : MonoBehaviour {
     // Shooting
     [Range(0.0f, 1f)]
     public float holdShootingTime;
+    public GameObject arrow;
+    public GameObject arrowStart;
 
     // SFXs
     public AudioClip coinSFX;
@@ -84,6 +86,7 @@ public class CharacterController2D : MonoBehaviour {
 
 		// determine the platform's specified layer
 		_platformLayer = LayerMask.NameToLayer("Platform");
+        
 	}
 
 	// this is where most of the player controller magic happens each game event loop
@@ -203,6 +206,7 @@ public class CharacterController2D : MonoBehaviour {
 		}
 	}
 
+    // Shoot
     IEnumerator ShootArrow()
     {
         _isShooting = true;
@@ -211,11 +215,16 @@ public class CharacterController2D : MonoBehaviour {
             _vx = 0;
         }
         _animator.SetBool("Shoot", true);
+        GameObject _arrowInst = Instantiate(arrow, arrowStart.transform);
+        _arrowInst.transform.parent = null;
+        Arrow _arrowScript = _arrowInst.GetComponent<Arrow>();
+        _arrowScript.Move(_facingRight);
         yield return new WaitForSeconds(holdShootingTime);
         _isShooting = false;
         _animator.SetBool("Shoot", false);
 
     }
+
     // make the player jump
     void DoJump()
     {
