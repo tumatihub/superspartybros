@@ -178,7 +178,12 @@ public class Enemy : MonoBehaviour {
 				_moveTime = Time.time + stunnedTime;
 			}
 		}
-	}
+        if (collision.CompareTag("Arrow"))
+        {
+            Debug.Log("Enemy Parent collision!");
+            Stunned();
+        }
+    }
 	
 	// if the Enemy collides with a MovingPlatform, then make it a child of that platform
 	// so it will go for a ride on the MovingPlatform

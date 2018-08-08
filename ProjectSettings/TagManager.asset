@@ -9,6 +9,7 @@ TagManager:
   - MovingPlatform
   - Enemy
   - Arrow
+  - Shield
   layers:
   - Default
   - TransparentFX

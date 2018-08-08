@@ -26,6 +26,7 @@ public class EnemyShield : MonoBehaviour {
     {
         if (collision.CompareTag("Arrow"))
         {
+            Debug.Log("Shield");
             _anim.SetTrigger("Shield");
         }
     }

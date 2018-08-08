@@ -100,7 +100,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   arrowVelocity: 5
-  _arrowLifeTime: 2
+  _arrowLifeTime: 0.5
 --- !u!212 &212542017881662852
 SpriteRenderer:
   m_ObjectHideFlags: 1

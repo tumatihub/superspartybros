@@ -27,6 +27,17 @@ public class Arrow : MonoBehaviour {
         _rb.velocity = new Vector2(_rb.velocity.x, 0);
 	}
 
+    //
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        DestroyArrow();
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        DestroyArrow();
+    }
+
     public void Move(bool _facingRight)
     {
         _vx = arrowVelocity;
@@ -35,5 +46,10 @@ public class Arrow : MonoBehaviour {
             _vx *= -1;
         }
         _rb.velocity = new Vector2(_vx, 0);
+    }
+
+    public void DestroyArrow()
+    {
+        Destroy(gameObject);
     }
 }
