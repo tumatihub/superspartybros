@@ -29,18 +29,30 @@ public class Enemy : MonoBehaviour {
 	public AudioClip stunnedSFX;
 	public AudioClip attackSFX;
 	
-	// private variables below
-	
-	// store references to components on the gameObject
-	Transform _transform;
+    public bool Moving { get { return _moving; } set { _moving = value; } }
+
+    public float VX { get { return _vx; } set { _vx = value; } }
+
+    public int MyWaypointIndex { get { return _myWaypointIndex; } set { _myWaypointIndex = value; } }
+
+    public Transform EnemyTransform { get { return _transform; } }
+
+    public Rigidbody2D EnemyRB { get { return _rigidbody; } }
+
+    public float moveTime;
+
+    public Animator animator;
+
+    // private variables below
+
+    // store references to components on the gameObject
+    Transform _transform;
 	Rigidbody2D _rigidbody;
-	Animator _animator;
 	AudioSource _audio;
 	
 	// movement tracking
     [SerializeField]
-	int _myWaypointIndex = 0; // used as index for My_Waypoints
-	float _moveTime; 
+	int _myWaypointIndex = 0; // used as index for My_Waypoints 
 	float _vx = 0f;
 	bool _moving = true;
 	
@@ -58,8 +70,8 @@ public class Enemy : MonoBehaviour {
 		if (_rigidbody==null) // if Rigidbody is missing
 			Debug.LogError("Rigidbody2D component missing from this gameobject");
 		
-		_animator = GetComponent<Animator>();
-		if (_animator==null) // if Animator is missing
+		animator = GetComponent<Animator>();
+		if (animator==null) // if Animator is missing
 			Debug.LogError("Animator component missing from this gameobject");
 		
 		_audio = GetComponent<AudioSource> ();
@@ -74,7 +86,7 @@ public class Enemy : MonoBehaviour {
 		}
 		
 		// setup moving defaults
-		_moveTime = 0f;
+		moveTime = 0f;
 		_moving = true;
 		
 		// determine the enemies specified layer
@@ -89,59 +101,19 @@ public class Enemy : MonoBehaviour {
 	}
 	
 	// if not stunned then move the enemy when time is > _moveTime
-	void Update () {
-		if (!isStunned)
-		{
-			if (Time.time >= _moveTime) {
-				EnemyMovement();
-			} else {
-				_animator.SetBool("Moving", false);
-			}
-		}
-	}
-	
-	// Move the enemy through its rigidbody based on its waypoints
-	void EnemyMovement() {
-		// if there isn't anything in My_Waypoints
-		if ((myWaypoints.Length != 0) && (_moving)) {
-			
-			// make sure the enemy is facing the waypoint (based on previous movement)
-			Flip (_vx);
-			
-			// determine distance between waypoint and enemy
-			_vx = myWaypoints[_myWaypointIndex].transform.position.x-_transform.position.x;
-			
-			// if the enemy is close enough to waypoint, make it's new target the next waypoint
-			if (Mathf.Abs(_vx) <= 0.05f) {
-				// At waypoint so stop moving
-				_rigidbody.velocity = new Vector2(0, 0);
-				
-				// increment to next index in array
-				_myWaypointIndex++;
-				
-				// reset waypoint back to 0 for looping
-				if(_myWaypointIndex >= myWaypoints.Length) {
-					if (loopWaypoints)
-						_myWaypointIndex = 0;
-					else
-						_moving = false;
-				}
-				
-				// setup wait time at current waypoint
-				_moveTime = Time.time + waitAtWaypointTime;
-			} else {
-				// enemy is moving
-				_animator.SetBool("Moving", true);
-				
-				// Set the enemy's velocity to moveSpeed in the x direction.
-				_rigidbody.velocity = new Vector2(_transform.localScale.x * moveSpeed, _rigidbody.velocity.y);
-			}
-			
-		}
-	}
+	//void Update () {
+	//	if (!isStunned)
+	//	{
+	//		if (Time.time >= _moveTime) {
+	//			EnemyMovement();
+	//		} else {
+	//			_animator.SetBool("Moving", false);
+	//		}
+	//	}
+	//}
 	
 	// flip the enemy to face torward the direction he is moving in
-	void Flip(float _vx) {
+	public void Flip(float _vx) {
 		
 		// get the current scale
 		Vector3 localScale = _transform.localScale;
@@ -175,7 +147,7 @@ public class Enemy : MonoBehaviour {
 				player.ApplyDamage (damageAmount);
 				
 				// stop to enjoy killing the player
-				_moveTime = Time.time + stunnedTime;
+				moveTime = Time.time + stunnedTime;
 			}
 		}
         if (collision.CompareTag("Arrow"))
@@ -219,7 +191,7 @@ public class Enemy : MonoBehaviour {
 			
 			// provide the player with feedback that enemy is stunned
 			playSound(stunnedSFX);
-			_animator.SetTrigger("Stunned");
+			animator.SetTrigger("Stunned");
 			
 			// stop moving
 			_rigidbody.velocity = new Vector2(0, 0);
@@ -246,6 +218,6 @@ public class Enemy : MonoBehaviour {
 		stunnedCheck.layer = _enemyLayer;
 		
 		// provide the player with feedback
-		_animator.SetTrigger("Stand");
+		animator.SetTrigger("Stand");
 	}
 }
